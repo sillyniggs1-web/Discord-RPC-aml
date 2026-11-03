@@ -51,11 +51,15 @@ jobs:
           BT=$(ls -d "$ANDROID_HOME"/build-tools/* | sort -V | tail -1)
           PLAT=$(ls -d "$ANDROID_HOME"/platforms/android-* | sort -V | tail -1)
           mkdir -p build/classes build/dex
-          javac --release 8 -cp "$PLAT/android.jar:third_party/jars/discord_partner_sdk.jar:third_party/jars/libwebrtc.jar" \
-                -d build/classes java/com/hexed/rpc/HxBridge.java
+          # the SDK's own NativeCalls throws inside the game (needs manifest entries + androidx), so it is
+          # replaced by java/com/discord/socialsdk/NativeCalls.java: strip the original from the jar copy
+          cp third_party/jars/discord_partner_sdk.jar build/sdk_patched.jar
+          zip -q -d build/sdk_patched.jar 'com/discord/socialsdk/NativeCalls*' || true
+          javac --release 8 -cp "$PLAT/android.jar:build/sdk_patched.jar:third_party/jars/libwebrtc.jar" \
+                -d build/classes java/com/hexed/rpc/HxBridge.java java/com/discord/socialsdk/NativeCalls.java
           jar cf build/hx_classes.jar -C build/classes .
           "$BT/d8" --release --min-api 21 --lib "$PLAT/android.jar" --output build/dex \
-                third_party/jars/discord_partner_sdk.jar third_party/jars/libwebrtc.jar build/hx_classes.jar
+                build/sdk_patched.jar third_party/jars/libwebrtc.jar build/hx_classes.jar
           (cd build/dex && zip -q ../hx_dex.jar classes*.dex)
           unzip -l build/hx_dex.jar
 
