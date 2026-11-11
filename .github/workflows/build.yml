@@ -1,7 +1,7 @@
 name: Build Discord_RPC AML mod
 
 # Repo layout (only these two things):
-#   Discord_RPC_AML_v3.4_source.zip    <- the source zip (any *.zip in the repo root works; the most recently pushed one is used)
+#   Discord_RPC_AML_v3.5_source.zip    <- the source zip (any *.zip in the repo root works; the most recently pushed one is used)
 #   .github/workflows/build.yml        <- this file
 # Push either one (or press "Run workflow") and the build runs by itself.
 
