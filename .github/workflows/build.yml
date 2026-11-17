@@ -1,7 +1,7 @@
 name: Build Discord_RPC AML mod
 
-# Repo layout (only these two things):
-#   Discord_RPC_AML_v3.5_source.zip    <- the source zip (any *.zip in the repo root works; the most recently pushed one is used)
+# Hexed Discord RPC v4 (no Discord login). Repo layout (only these two things):
+#   Discord_RPC_AML_v4_0_source.zip    <- the source zip (any *.zip in the repo root works; the most recently pushed one is used)
 #   .github/workflows/build.yml        <- this file
 # Push either one (or press "Run workflow") and the build runs by itself.
 
@@ -79,15 +79,16 @@ jobs:
           done
 
       # 3) package per ABI: libDiscord_RPC.so, the Discord_RPC/ support folder, and the Lua script
+      #    v4 file names: libhxrpc_core_v4.so + hx_dex_v3.jar (must match stub.cpp: kCore / kDex)
       - name: Package
         working-directory: ${{ env.PROJ }}
         run: |
           for ABI in armeabi-v7a arm64-v8a; do
             mkdir -p "dist/$ABI/Discord_RPC"
             cp "build/$ABI/libDiscord_RPC.so"                    "dist/$ABI/"
-            cp "build/$ABI/payload/libhxrpc_core.so"             "dist/$ABI/Discord_RPC/libhxrpc_core_v2.so"
+            cp "build/$ABI/payload/libhxrpc_core.so"             "dist/$ABI/Discord_RPC/libhxrpc_core_v4.so"
             cp "third_party/lib/$ABI/libdiscord_partner_sdk.so"  "dist/$ABI/Discord_RPC/"
-            cp build/hx_dex.jar                                  "dist/$ABI/Discord_RPC/hx_dex_v2.jar"
+            cp build/hx_dex.jar                                  "dist/$ABI/Discord_RPC/hx_dex_v3.jar"
             cp lua/Discord_RPC.lua                               "dist/$ABI/"
           done
           ls -lR dist
