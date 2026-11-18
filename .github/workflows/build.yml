@@ -1,7 +1,7 @@
 name: Build Discord_RPC AML mod
 
-# Hexed Discord RPC v5.1 (pure game activity, no Discord login). Repo layout (only these two things):
-#   Discord_RPC_AML_v5_1_source.zip    <- the source zip (any *.zip in the repo root works; the most recently pushed one is used)
+# Hexed Discord RPC v5.2 (pure game activity, no Discord login). Repo layout (only these two things):
+#   Discord_RPC_AML_v5_2_source.zip    <- the source zip (any *.zip in the repo root works; the most recently pushed one is used)
 #   .github/workflows/build.yml        <- this file
 # Push either one (or press "Run workflow") and the build runs by itself.
 
