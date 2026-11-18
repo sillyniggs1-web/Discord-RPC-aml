@@ -1,7 +1,7 @@
 name: Build Discord_RPC AML mod
 
-# Hexed Discord RPC v4 (no Discord login). Repo layout (only these two things):
-#   Discord_RPC_AML_v4_0_source.zip    <- the source zip (any *.zip in the repo root works; the most recently pushed one is used)
+# Hexed Discord RPC v5.1 (pure game activity, no Discord login). Repo layout (only these two things):
+#   Discord_RPC_AML_v5_1_source.zip    <- the source zip (any *.zip in the repo root works; the most recently pushed one is used)
 #   .github/workflows/build.yml        <- this file
 # Push either one (or press "Run workflow") and the build runs by itself.
 
@@ -66,6 +66,7 @@ jobs:
           unzip -l build/hx_dex.jar
 
       # 2) native libs. Nezuko is armeabi-v7a; arm64-v8a is built too
+      #    (the GTA San Andreas application id 363447565905166336 is the default in CMakeLists.txt, override: -DHX_APP_ID=...)
       - name: Build native libs
         working-directory: ${{ env.PROJ }}
         run: |
@@ -78,18 +79,19 @@ jobs:
             cmake --build "build/$ABI" -j
           done
 
-      # 3) package per ABI: libDiscord_RPC.so, the Discord_RPC/ support folder, and the Lua script
-      #    v4 file names: libhxrpc_core_v4.so + hx_dex_v3.jar (must match stub.cpp: kCore / kDex)
+      # 3) package per ABI: libDiscord_RPC.so, the Discord_RPC/ support folder, and the optional helper script
+      #    v5 file names: libhxrpc_core_v5.so + hx_dex_v3.jar (must match stub.cpp: kCore / kDex)
+      #    Discord_RPC.ini is created by the mod on first run (no file to ship)
       - name: Package
         working-directory: ${{ env.PROJ }}
         run: |
           for ABI in armeabi-v7a arm64-v8a; do
             mkdir -p "dist/$ABI/Discord_RPC"
             cp "build/$ABI/libDiscord_RPC.so"                    "dist/$ABI/"
-            cp "build/$ABI/payload/libhxrpc_core.so"             "dist/$ABI/Discord_RPC/libhxrpc_core_v4.so"
+            cp "build/$ABI/payload/libhxrpc_core.so"             "dist/$ABI/Discord_RPC/libhxrpc_core_v5.so"
             cp "third_party/lib/$ABI/libdiscord_partner_sdk.so"  "dist/$ABI/Discord_RPC/"
             cp build/hx_dex.jar                                  "dist/$ABI/Discord_RPC/hx_dex_v3.jar"
-            cp lua/Discord_RPC.lua                               "dist/$ABI/"
+            cp lua/Discord_RPC_Helper.lua                        "dist/$ABI/"
           done
           ls -lR dist
           echo "DIST=$PWD/dist" >> "$GITHUB_ENV"
